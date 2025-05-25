@@ -1051,7 +1051,7 @@ print(f"已启用滤波器类型: {config['filter']['type']}")
 weights_path = config['paths']['models']['car']
 weights_path_next = config['paths']['models']['armor']
 detector = YOLOv5Detector(weights_path, data='yaml/car.yaml', conf_thres=0.1, iou_thres=0.5, max_det=14, ui=True)
-detector_next = YOLOv5Detector(weights_path_next, data='yaml/armor.yaml', conf_thres=0.50, iou_thres=0.2,
+detector_next = YOLOv5Detector(weights_path_next, data='yaml/armor.yaml', conf_thres=0.10, iou_thres=0.2,
                                max_det=1,
                                ui=True)
 
@@ -1126,29 +1126,29 @@ while True:
             tracker_boxes = [trk.bbox for trk in tracker.tracked_objects]
         
         # 使用匈牙利算法进行检测框与跟踪器的匹配
-        matches, unmatched_dets, unmatched_trks = tracker._assign_detections_to_trackers(
+            matches, unmatched_dets, unmatched_trks = tracker._assign_detections_to_trackers(
             [detection_box], tracker.tracked_objects
         )
         
         # 处理匹配结果
-        if len(matches) > 0:
+            if len(matches) > 0:
             # 更新已匹配的跟踪器
-            for match in matches:
+              for match in matches:
                 det_idx, trk_idx = match[0], match[1]
                 tracker.tracked_objects[trk_idx].update(detection_box, conf)
-        else:
-            # 为未匹配的检测创建新跟踪器
-            new_obj = TrackedObject(detection_box, cls, tracker.next_id)
-            new_obj.confidence = conf
-            tracker.tracked_objects.append(new_obj)
-            tracker.next_id += 1
+            else:
+             # 为未匹配的检测创建新跟踪器
+              new_obj = TrackedObject(detection_box, cls, tracker.next_id)
+              new_obj.confidence = conf
+              tracker.tracked_objects.append(new_obj)
+              tracker.next_id += 1
 
 
             left, top, w, h = int(left), int(top), int(w), int(h)
-            
+             
             # 存储第一次检测结果和区域
             # ROI出机器人区域
-            cropped = camera_image[top:top + h, left:left + w]
+            cropped = camera_image[top:top+h , left:left+w]
             # if np.random.rand >0.1:
             #     if np.random.rand() > 0.7:
             #         cropped=add_random_motion(cropped)
@@ -1164,7 +1164,9 @@ while True:
                 img0[top:top + h, left:left + w] = cropped_img
 
                 for detection1 in result_n:
+                    print(f"检测到的模型为：",detection1[0])
                     cls, xywh, conf = detection1
+                    print(f"检测到的模型为：",detection1[0])
                     if cls:  # 所有装甲板都处理，可选择屏蔽一些:
                         # print(cls)
                         x, y, w, h = xywh
